@@ -28,8 +28,7 @@ public:
     void removeall();
 private:
     std::string Dir;// path to phonebook, where we store contacts info.
-    std::ofstream Fo;
-    std::ifstream Fi;
+    std::fstream Fio;
     std::set<std::string> tempo_phonebook;
     char whatdata(strp _Data);//return 'n' if _Data is name, return 'p' if _Data is Phone and 'e' if _Data is email. 
     int find(strp _Dataitem);//return the number of the line containing _Dataitem.(_Dataitem could be name, phone or email).

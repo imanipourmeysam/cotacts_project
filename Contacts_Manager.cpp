@@ -33,8 +33,8 @@ int Contacts_Manager::find(strp _Dataitem)
 {
     char datatype = this->whatdata(_Dataitem);
     int fline = 0;
-    Fo.close();
-    Fi.open(Dir);
+    Fio.close();
+    Fio.open(Dir,std::fstream::in);
     std::string line;
     while(std::getline(Fi,line))
     {
@@ -49,7 +49,7 @@ int Contacts_Manager::find(strp _Dataitem)
                     {
                         if(!line.compare(0,firstcomma,_Dataitem))
                         {
-                             Fi.close();
+                             Fio.close();
                              return fline;
                         }
                     }break;
@@ -57,7 +57,7 @@ int Contacts_Manager::find(strp _Dataitem)
                     {
                         if(!line.compare(firstcomma+1,secondcomma-firstcomma-1,_Dataitem))
                         {
-                             Fi.close();
+                             Fio.close();
                              return fline; 
                         }
 
@@ -66,7 +66,7 @@ int Contacts_Manager::find(strp _Dataitem)
                     {
                         if(!line.compare(secondcomma+1,line.length()-secondcomma-1,_Dataitem))
                         {
-                             Fi.close();
+                             Fio.close();
                              return fline;                            
                         }
                     }break;
@@ -76,13 +76,13 @@ int Contacts_Manager::find(strp _Dataitem)
         fline++;
     }
     fline = -1;
-    Fi.close();
+    Fio.close();
     return fline;
 }
 
 void Contacts_Manager::newcontact(const NPE& _NPE)
 {
-    Fi.close();
+    Fio.close();
     if (this->find(_NPE.Name) != -1)
     {
         std::cout << "this name is already exist." << "\n";
@@ -105,15 +105,15 @@ void Contacts_Manager::newcontact(const NPE& _NPE)
     }
     else
     {
-        Fo.open(Dir,std::fstream::app);
-        Fo << _NPE.Name << "," << _NPE.Phone << "," << _NPE.Email << "\n";
+        Fio.open(Dir,std::fstream::app);
+        Fio << _NPE.Name << "," << _NPE.Phone << "," << _NPE.Email << "\n";
     }
     return;
 }
 
 void Contacts_Manager::newcontact(strp _Name, strp _Phone, strp _Email)
 {
-    Fi.close();
+    Fio.close();
     if(this->find(_Name) != -1)
     {
         std::cout << "this name is already exist." << "\n";
@@ -136,9 +136,9 @@ void Contacts_Manager::newcontact(strp _Name, strp _Phone, strp _Email)
     }
     else
     {
-        Fo.open(Dir,std::fstream::app);
-        NPE temp(_Name, _Phone, _Email); 
-        Fo << _Name << "," << _Phone << "," << _Email << "\n";
+        Fio.open(Dir,std::fstream::app);
+        //NPE temp(_Name, _Phone, _Email); // could be deleted I think.
+        Fio << _Name << "," << _Phone << "," << _Email << "\n";
     }
     return; 
 }
@@ -151,13 +151,13 @@ void Contacts_Manager::removecontact(strp _CurrentData)
         std::cout << "can't find a contact with given info." << "\n";
         return;
     }
-    Fo.close();
-    Fi.open(Dir);
+    Fio.close();
+    Fio.open(Dir,std::fstream::in);
     tempo_phonebook.clear();
     bool condition = true;
     std::string line;
     int cnt = 0;
-    while(std::getline(Fi,line))
+    while(std::getline(Fio,line))
     {
         if(line == "")
            condition = false; 
@@ -168,13 +168,13 @@ void Contacts_Manager::removecontact(strp _CurrentData)
         cnt++;
         condition = true;
     }
-    Fi.close();
-    Fo.open(Dir,std::fstream::trunc);
+    Fio.close();
+    Fio.open(Dir,std::fstream::trunc);
     for(auto i : tempo_phonebook)
     {
-        Fo << i << "\n";
+        Fio << i << "\n";
     }
-    Fo.close();
+    Fio.close();
 }
 
 void Contacts_Manager::edit(strp _CurrentName, strp _NewData)
@@ -186,10 +186,10 @@ void Contacts_Manager::edit(strp _CurrentName, strp _NewData)
         return;
     }
     tempo_phonebook.clear();
-    Fi.open(Dir);
+    Fio.open(Dir,std::fstream::in);
     std::string line;
     int cnt = 0;
-    while(std::getline(Fi,line))
+    while(std::getline(Fio,line))
     {
         if(cnt == fline)
         {
@@ -220,13 +220,13 @@ void Contacts_Manager::edit(strp _CurrentName, strp _NewData)
         }
         cnt++;
     }
-    Fi.close();
-    Fo.open(Dir,std::fstream::trunc);
+    Fio.close();
+    Fio.open(Dir,std::fstream::trunc);
     for(auto i : tempo_phonebook)
     {
-        Fo << i << "\n";
+        Fio << i << "\n";
     }
-    Fo.close();
+    Fio.close();
     return;
 }
 //I was thinking if I could use multiprocessing then I would invok two times edit function with _NewData 1 and 2.
@@ -329,11 +329,11 @@ void Contacts_Manager::printinfo(strp _SearchData)
         std::cout << "No contact has been found" << "\n";
         return;
     }
-    Fo.close();
-    Fi.open(Dir);
+    Fio.close();
+    Fio.open(Dir,std::fstream::in);
     int cnt = 0;
     std::string line;
-    while(std::getline(Fi,line))
+    while(std::getline(Fio,line))
     {
         if(cnt == fline)
         {
@@ -350,8 +350,8 @@ void Contacts_Manager::printinfo(strp _SearchData)
 
 void Contacts_Manager::removeall()
 {
-    Fi.close();
-    Fo.open(Dir,std::ofstream::trunc);
+    Fio.close();
+    Fio.open(Dir,std::ofstream::trunc);
     return;
 }
 
