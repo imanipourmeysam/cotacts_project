@@ -34,9 +34,9 @@ int Contacts_Manager::find(strp _Dataitem)
     char datatype = this->whatdata(_Dataitem);
     int fline = 0;
     Fio.close();
-    Fio.open(Dir,std::fstream::in);
+    Fio.open(Dir,std::ios::in);
     std::string line;
-    while(std::getline(Fi,line))
+    while(std::getline(Fio,line))
     {
         size_t firstcomma = line.find(',',0);
         size_t secondcomma= line.find(',',firstcomma+1);
@@ -105,7 +105,7 @@ void Contacts_Manager::newcontact(const NPE& _NPE)
     }
     else
     {
-        Fio.open(Dir,std::fstream::app);
+        Fio.open(Dir, std::ios::app);
         Fio << _NPE.Name << "," << _NPE.Phone << "," << _NPE.Email << "\n";
     }
     return;
@@ -136,8 +136,7 @@ void Contacts_Manager::newcontact(strp _Name, strp _Phone, strp _Email)
     }
     else
     {
-        Fio.open(Dir,std::fstream::app);
-        //NPE temp(_Name, _Phone, _Email); // could be deleted I think.
+        Fio.open(Dir,std::ios::app);
         Fio << _Name << "," << _Phone << "," << _Email << "\n";
     }
     return; 
@@ -148,11 +147,11 @@ void Contacts_Manager::removecontact(strp _CurrentData)
     int fline = this->find(_CurrentData);
     if(fline == -1)
     {
-        std::cout << "can't find a contact with given info." << "\n";
+        std::cout << "can't find a contact with given info.\n";
         return;
     }
     Fio.close();
-    Fio.open(Dir,std::fstream::in);
+    Fio.open(Dir,std::ios::in);
     tempo_phonebook.clear();
     bool condition = true;
     std::string line;
@@ -169,7 +168,7 @@ void Contacts_Manager::removecontact(strp _CurrentData)
         condition = true;
     }
     Fio.close();
-    Fio.open(Dir,std::fstream::trunc);
+    Fio.open(Dir,std::ios::out|std::ios::trunc);
     for(auto i : tempo_phonebook)
     {
         Fio << i << "\n";
@@ -186,7 +185,7 @@ void Contacts_Manager::edit(strp _CurrentName, strp _NewData)
         return;
     }
     tempo_phonebook.clear();
-    Fio.open(Dir,std::fstream::in);
+    Fio.open(Dir,std::ios::in);
     std::string line;
     int cnt = 0;
     while(std::getline(Fio,line))
@@ -221,7 +220,7 @@ void Contacts_Manager::edit(strp _CurrentName, strp _NewData)
         cnt++;
     }
     Fio.close();
-    Fio.open(Dir,std::fstream::trunc);
+    Fio.open(Dir,std::ios::out|std::ios::trunc);
     for(auto i : tempo_phonebook)
     {
         Fio << i << "\n";
@@ -330,7 +329,7 @@ void Contacts_Manager::printinfo(strp _SearchData)
         return;
     }
     Fio.close();
-    Fio.open(Dir,std::fstream::in);
+    Fio.open(Dir,std::ios::in);
     int cnt = 0;
     std::string line;
     while(std::getline(Fio,line))
@@ -351,7 +350,8 @@ void Contacts_Manager::printinfo(strp _SearchData)
 void Contacts_Manager::removeall()
 {
     Fio.close();
-    Fio.open(Dir,std::ofstream::trunc);
+    Fio.open(Dir,std::ios::out|std::ios::trunc);
+    Fio.close();
     return;
 }
 
